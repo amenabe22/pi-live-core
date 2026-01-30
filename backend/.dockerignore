@@ -1,0 +1,46 @@
+# secret configs
+
+*-secret.json
+*-secret.yml
+*-secret.yaml
+*-secret.ini
+
+
+# local scripts
+
+*-local.bat
+*-local.sh
+*-local.html
+*-local.py
+
+# Python/venv
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Bytecode & coverage
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Git/IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Env & secrets
+.env
+.env.*
+
+# Builds, dist, eggs
+build/
+dist/
+*.egg-info
+
+# Alembic junk files
+alembic/versions/*.pyc

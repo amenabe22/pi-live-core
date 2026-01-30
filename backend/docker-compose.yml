@@ -1,0 +1,19 @@
+services:
+  pi-live-core-api:
+    image: itsm3abena/pi-live-core-api:v1
+    container_name: pi-live-core-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-443}:10000"
+    volumes:
+      - ./certs:/app/certs:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:10000/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
