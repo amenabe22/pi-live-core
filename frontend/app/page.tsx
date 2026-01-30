@@ -179,9 +179,6 @@ export default function HomePage() {
                     icon={stat.icon}
                     description={stat.description}
                     className={cn('relative overflow-hidden', stat.gradient && `bg-gradient-to-br ${stat.gradient} text-white`)}
-                    iconClassName={stat.gradient ? 'text-white/80' : 'text-muted-foreground'}
-                    valueClassName={stat.gradient ? 'text-white' : 'text-foreground'}
-                    descriptionClassName={stat.gradient ? 'text-white/70' : 'text-muted-foreground'}
                   />
                 </motion.div>
               ))}

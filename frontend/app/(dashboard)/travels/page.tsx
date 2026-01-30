@@ -71,15 +71,15 @@ export default function TravelsPage() {
     }
   };
 
-  const handleStart = (id: number) => {
+  const handleStart = (id: string) => {
     startMutation.mutate(id);
   };
 
-  const handleComplete = (id: number) => {
+  const handleComplete = (id: string) => {
     completeMutation.mutate(id);
   };
 
-  const handleCancel = (id: number) => {
+  const handleCancel = (id: string) => {
     if (confirm('Are you sure you want to cancel this travel?')) {
       cancelMutation.mutate(id);
     }

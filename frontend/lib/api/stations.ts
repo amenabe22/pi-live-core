@@ -23,7 +23,7 @@ export const stationsApi = {
     return response.data;
   },
 
-  getById: async (id: number): Promise<Station> => {
+  getById: async (id: string): Promise<Station> => {
     const response = await apiClient.get(`/stations/${id}`);
     return response.data;
   },
@@ -33,16 +33,16 @@ export const stationsApi = {
     return response.data;
   },
 
-  update: async (id: number, data: StationUpdate): Promise<Station> => {
+  update: async (id: string, data: StationUpdate): Promise<Station> => {
     const response = await apiClient.put(`/stations/${id}`, data);
     return response.data;
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     await apiClient.delete(`/stations/${id}`);
   },
 
-  checkVehicleAtStation: async (vehicleId: number): Promise<VehicleAtStationCheck> => {
+  checkVehicleAtStation: async (vehicleId: string): Promise<VehicleAtStationCheck> => {
     const response = await apiClient.get(`/stations/check/${vehicleId}/at-station`);
     return response.data;
   },

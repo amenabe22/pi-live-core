@@ -16,7 +16,7 @@ L.Icon.Default.mergeOptions({
 interface MapComponentProps {
   vehicles: Vehicle[];
   stations: Station[];
-  selectedVehicleId: number | null;
+  selectedVehicleId: string | null;
   vehicleLocation: LocationUpdate | null;
 }
 
@@ -27,7 +27,7 @@ export function MapComponent({
   vehicleLocation,
 }: MapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
-  const markersRef = useRef<Map<number, L.Marker>>(new Map());
+  const markersRef = useRef<Map<string, L.Marker>>(new Map());
 
   useEffect(() => {
     if (!mapRef.current) {

@@ -7,24 +7,24 @@ export type ReviewType = 'driver' | 'trip' | 'service';
 export type HistoryStatus = 'completed' | 'cancelled';
 
 export interface User {
-  id: number;
+  id: string;
   email: string;
   role: UserRole;
   created_at: string;
 }
 
 export interface Vehicle {
-  id: number;
+  id: string;
   plate_number: string;
   model: string;
   status: VehicleStatus;
-  driver_id: number | null;
+  driver_id: string | null;
   created_at: string;
   driver?: User;
 }
 
 export interface Station {
-  id: number;
+  id: string;
   name: string;
   latitude: number;
   longitude: number;
@@ -34,11 +34,11 @@ export interface Station {
 }
 
 export interface Travel {
-  id: number;
-  vehicle_id: number;
-  driver_id: number;
-  origin_station_id: number;
-  destination_station_id: number;
+  id: string;
+  vehicle_id: string;
+  driver_id: string;
+  origin_station_id: string;
+  destination_station_id: string;
   status: TravelStatus;
   scheduled_departure: string | null;
   actual_departure: string | null;
@@ -55,12 +55,12 @@ export interface Travel {
 }
 
 export interface TravelHistory {
-  id: number;
-  travel_id: number;
-  vehicle_id: number;
-  driver_id: number;
-  origin_station_id: number;
-  destination_station_id: number;
+  id: string;
+  travel_id: string;
+  vehicle_id: string;
+  driver_id: string;
+  origin_station_id: string;
+  destination_station_id: string;
   departure_time: string;
   arrival_time: string | null;
   distance_km: number | null;
@@ -70,10 +70,10 @@ export interface TravelHistory {
 }
 
 export interface Review {
-  id: number;
-  travel_id: number | null;
-  driver_id: number;
-  reviewer_id: number;
+  id: string;
+  travel_id: string | null;
+  driver_id: string;
+  reviewer_id: string;
   rating: number;
   comment: string | null;
   review_type: ReviewType;
@@ -84,9 +84,9 @@ export interface Review {
 }
 
 export interface LiveTracking {
-  id: number;
-  vehicle_id: number;
-  driver_id: number;
+  id: string;
+  vehicle_id: string;
+  driver_id: string;
   latitude: number;
   longitude: number;
   speed: number | null;
@@ -122,9 +122,9 @@ export interface RegisterRequest {
 }
 
 export interface VehicleAtStationCheck {
-  vehicle_id: number;
+  vehicle_id: string;
   is_at_station: boolean;
-  station_id: number | null;
+  station_id: string | null;
   station_name: string | null;
   distance_meters: number | null;
 }
@@ -137,8 +137,8 @@ export interface RoutePoint {
 }
 
 export interface RouteResponse {
-  vehicle_id: number;
-  travel_id: number | null;
+  vehicle_id: string;
+  travel_id: string | null;
   points: RoutePoint[];
   total_points: number;
   start_time: string;
@@ -146,7 +146,7 @@ export interface RouteResponse {
 }
 
 export interface DriverStats {
-  driver_id: number;
+  driver_id: string;
   average_rating: number;
   total_reviews: number;
   rating_breakdown: Record<number, number>;

@@ -75,7 +75,7 @@ export default function VehiclesPage() {
     setIsFormOpen(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this vehicle?')) {
       deleteMutation.mutate(id);
     }

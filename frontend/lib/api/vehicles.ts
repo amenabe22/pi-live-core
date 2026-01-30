@@ -5,14 +5,14 @@ export interface VehicleCreate {
   plate_number: string;
   model: string;
   status?: VehicleStatus;
-  driver_id?: number | null;
+  driver_id?: string | null;
 }
 
 export interface VehicleUpdate {
   plate_number?: string;
   model?: string;
   status?: VehicleStatus;
-  driver_id?: number | null;
+  driver_id?: string | null;
 }
 
 export const vehiclesApi = {
@@ -21,7 +21,7 @@ export const vehiclesApi = {
     return response.data;
   },
 
-  getById: async (id: number): Promise<Vehicle> => {
+  getById: async (id: string): Promise<Vehicle> => {
     const response = await apiClient.get(`/vehicles/${id}`);
     return response.data;
   },
@@ -31,12 +31,12 @@ export const vehiclesApi = {
     return response.data;
   },
 
-  update: async (id: number, data: VehicleUpdate): Promise<Vehicle> => {
+  update: async (id: string, data: VehicleUpdate): Promise<Vehicle> => {
     const response = await apiClient.put(`/vehicles/${id}`, data);
     return response.data;
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     await apiClient.delete(`/vehicles/${id}`);
   },
 };

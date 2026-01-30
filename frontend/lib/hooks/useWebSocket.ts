@@ -3,7 +3,7 @@ import type { LocationUpdate } from '../types/api';
 
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
 
-export function useVehicleTracking(vehicleId: number | null) {
+export function useVehicleTracking(vehicleId: string | null) {
   const [location, setLocation] = useState<LocationUpdate | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);

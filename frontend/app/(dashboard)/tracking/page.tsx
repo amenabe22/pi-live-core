@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export default function TrackingPage() {
-  const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const { location, isConnected } = useVehicleTracking(selectedVehicleId);
 
   const { data: vehicles } = useQuery({
@@ -60,8 +60,8 @@ export default function TrackingPage() {
             </CardHeader>
             <CardContent className="pt-6">
               <Select
-                value={selectedVehicleId?.toString() || ''}
-                onValueChange={(value) => setSelectedVehicleId(value ? parseInt(value) : null)}
+                value={selectedVehicleId || ''}
+                onValueChange={(value) => setSelectedVehicleId(value || null)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select vehicle" />

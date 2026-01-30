@@ -5,8 +5,8 @@ export const historyApi = {
   getTravels: async (params?: {
     skip?: number;
     limit?: number;
-    vehicle_id?: number;
-    driver_id?: number;
+    vehicle_id?: string;
+    driver_id?: string;
     status_filter?: string;
     start_date?: string;
     end_date?: string;
@@ -15,17 +15,17 @@ export const historyApi = {
     return response.data;
   },
 
-  getById: async (id: number): Promise<TravelHistory> => {
+  getById: async (id: string): Promise<TravelHistory> => {
     const response = await apiClient.get(`/history/travels/${id}`);
     return response.data;
   },
 
-  getByVehicle: async (vehicleId: number, params?: { skip?: number; limit?: number }): Promise<TravelHistory[]> => {
+  getByVehicle: async (vehicleId: string, params?: { skip?: number; limit?: number }): Promise<TravelHistory[]> => {
     const response = await apiClient.get(`/history/vehicle/${vehicleId}`, { params });
     return response.data;
   },
 
-  getByDriver: async (driverId: number, params?: { skip?: number; limit?: number }): Promise<TravelHistory[]> => {
+  getByDriver: async (driverId: string, params?: { skip?: number; limit?: number }): Promise<TravelHistory[]> => {
     const response = await apiClient.get(`/history/driver/${driverId}`, { params });
     return response.data;
   },

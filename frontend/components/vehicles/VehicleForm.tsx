@@ -22,7 +22,7 @@ export function VehicleForm({ vehicle, onSuccess, onCancel }: VehicleFormProps) 
     plate_number: '',
     model: '',
     status: 'active' as VehicleStatus,
-    driver_id: null as number | null,
+    driver_id: null as string | null,
   });
 
   const queryClient = useQueryClient();

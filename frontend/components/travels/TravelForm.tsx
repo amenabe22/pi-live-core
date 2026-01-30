@@ -47,10 +47,10 @@ export function TravelForm({ onSuccess, onCancel }: TravelFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createMutation.mutate({
-      vehicle_id: parseInt(formData.vehicle_id),
-      driver_id: parseInt(formData.driver_id),
-      origin_station_id: parseInt(formData.origin_station_id),
-      destination_station_id: parseInt(formData.destination_station_id),
+      vehicle_id: formData.vehicle_id,
+      driver_id: formData.driver_id,
+      origin_station_id: formData.origin_station_id,
+      destination_station_id: formData.destination_station_id,
     });
   };
 
@@ -67,7 +67,7 @@ export function TravelForm({ onSuccess, onCancel }: TravelFormProps) {
           </SelectTrigger>
           <SelectContent>
             {vehicles?.map((vehicle) => (
-              <SelectItem key={vehicle.id} value={vehicle.id.toString()}>
+              <SelectItem key={vehicle.id} value={vehicle.id}>
                 {vehicle.plate_number} - {vehicle.model}
               </SelectItem>
             ))}

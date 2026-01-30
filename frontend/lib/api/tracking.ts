@@ -2,13 +2,13 @@ import { apiClient } from './client';
 import type { LiveTracking, RouteResponse } from '../types/api';
 
 export const trackingApi = {
-  getCurrent: async (vehicleId: number): Promise<LiveTracking> => {
+  getCurrent: async (vehicleId: string): Promise<LiveTracking> => {
     const response = await apiClient.get(`/tracking/vehicle/${vehicleId}/current`);
     return response.data;
   },
 
   getHistory: async (
-    vehicleId: number,
+    vehicleId: string,
     params?: {
       start_time?: string;
       end_time?: string;
@@ -20,9 +20,9 @@ export const trackingApi = {
   },
 
   getRoute: async (
-    vehicleId: number,
+    vehicleId: string,
     params?: {
-      travel_id?: number;
+      travel_id?: string;
       start_time?: string;
       end_time?: string;
     }
@@ -32,8 +32,8 @@ export const trackingApi = {
   },
 
   create: async (data: {
-    vehicle_id: number;
-    driver_id: number;
+    vehicle_id: string;
+    driver_id: string;
     latitude: number;
     longitude: number;
     speed?: number | null;
