@@ -9,6 +9,7 @@ class UserRole(str, Enum):
     DRIVER = "driver"
     USER = "user"
     ADMIN = "admin"
+    DISPATCHER = "dispatcher"
 
 
 class UserBase(BaseModel):

@@ -1,6 +1,6 @@
 // API Types matching backend schemas
 
-export type UserRole = 'driver' | 'user' | 'admin';
+export type UserRole = 'driver' | 'user' | 'admin' | 'dispatcher';
 export type VehicleStatus = 'active' | 'inactive' | 'maintenance';
 export type TravelStatus = 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
 export type ReviewType = 'driver' | 'trip' | 'service';

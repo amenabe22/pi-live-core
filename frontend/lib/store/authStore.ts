@@ -9,6 +9,7 @@ interface AuthState {
   clearAuth: () => void;
   isAuthenticated: () => boolean;
   isAdmin: () => boolean;
+  isDispatcher: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -37,6 +38,10 @@ export const useAuthStore = create<AuthState>()(
       isAdmin: () => {
         const { user } = get();
         return user?.role === 'admin';
+      },
+      isDispatcher: () => {
+        const { user } = get();
+        return user?.role === 'dispatcher';
       },
     }),
     {

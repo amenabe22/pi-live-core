@@ -21,6 +21,7 @@ def hash_password(password: str) -> str:
 
 TEST_USERS = [
     {"email": "admin@pilive.com", "password": "admin123", "role": "admin"},
+    {"email": "dispatcher@pilive.com", "password": "dispatcher123", "role": "dispatcher"},
     {"email": "driver1@pilive.com", "password": "driver123", "role": "driver"},
     {"email": "driver2@pilive.com", "password": "driver123", "role": "driver"},
     {"email": "user1@pilive.com", "password": "user123", "role": "user"},
@@ -58,6 +59,9 @@ if __name__ == "__main__":
     print("\nAdmin:")
     print("  Email:    admin@pilive.com")
     print("  Password: admin123")
+    print("\nDispatcher:")
+    print("  Email:    dispatcher@pilive.com")
+    print("  Password: dispatcher123")
     print("\nDrivers:")
     print("  Email:    driver1@pilive.com  |  Password: driver123")
     print("  Email:    driver2@pilive.com  |  Password: driver123")

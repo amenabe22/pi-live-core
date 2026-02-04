@@ -27,7 +27,7 @@ import { Menu } from 'lucide-react';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isDispatcher } = useAuthStore();
   const [isChecking, setIsChecking] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -35,16 +35,19 @@ export default function HomePage() {
     // Wait a bit for Zustand persist to hydrate
     const timer = setTimeout(() => {
       const authenticated = isAuthenticated();
-      
+      const dispatcher = isDispatcher();
+
       if (!authenticated) {
         router.replace('/login');
+      } else if (dispatcher) {
+        router.replace('/dispatcher');
       } else {
         setIsChecking(false);
       }
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [router, isAuthenticated]);
+  }, [router, isAuthenticated, isDispatcher]);
 
   const { data: vehicles, isLoading: vehiclesLoading } = useQuery({
     queryKey: ['vehicles'],

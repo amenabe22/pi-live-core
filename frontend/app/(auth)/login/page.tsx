@@ -39,7 +39,11 @@ export default function LoginPage() {
       
       setAuth(user, tokenData.access_token);
       toast.success('Login successful!');
-      router.push('/'); // Dashboard is at root
+      if (user.role === 'dispatcher') {
+        router.push('/dispatcher');
+      } else {
+        router.push('/');
+      }
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error(error.response?.data?.detail || 'Login failed');

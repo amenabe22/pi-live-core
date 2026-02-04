@@ -17,13 +17,16 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
+  const isDispatcher = useAuthStore((state) => state.isDispatcher());
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/login');
+    } else if (isDispatcher()) {
+      router.push('/dispatcher');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isDispatcher, router]);
 
   if (!isAuthenticated) {
     return null;
