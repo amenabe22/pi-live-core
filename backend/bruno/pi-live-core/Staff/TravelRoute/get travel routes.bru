@@ -1,0 +1,16 @@
+meta {
+  name: get travel routes
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{url}}/staff/travel-routes
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

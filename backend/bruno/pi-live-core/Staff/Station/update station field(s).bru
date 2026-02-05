@@ -1,0 +1,26 @@
+meta {
+  name: update station field(s)
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{url}}/staff/stations/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 00000000-0000-0000-0000-000000000001
+}
+
+body:json {
+  {
+    "name": "Mexico Station 2"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

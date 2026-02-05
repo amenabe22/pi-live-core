@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "pi-live-core",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

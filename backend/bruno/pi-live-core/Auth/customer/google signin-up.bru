@@ -1,0 +1,22 @@
+meta {
+  name: google signin/up
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/auth/customer/google
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "firebase_id_token": ""
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

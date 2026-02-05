@@ -6,12 +6,12 @@ from core.types import PhoneNumber
 
 
 class StaffSignUpRequest(BaseModel):
+    """Name (full_name), gender, and dob fill profile/staff data."""
     email: EmailStr
-    phone_no: PhoneNumber
-    password: str = Field(..., min_length=8)
+    password: str | None = Field(default=None, min_length=8)
     full_name: str
     gender: Gender
-    type: str | None = None
+    dob: date | None = None
     role: Role
     firebase_auth_token: str
 
@@ -26,7 +26,7 @@ class StaffVerifyOTPRequest(BaseModel):
     firebase_auth_token: str
 
 class StaffSignInRequest(BaseModel):
-    phone_no: PhoneNumber
+    email: EmailStr
     password: str
 
 class StaffResponse(BaseModel):
@@ -34,8 +34,8 @@ class StaffResponse(BaseModel):
     full_name: str
     gender: Gender
     email: EmailStr
-    phone_no: PhoneNumber
-    type: str | None
+    dob: date | None = None
+    phone_no: PhoneNumber | None = None
 
     class Config:
         from_attributes = True
@@ -44,3 +44,12 @@ class StaffResponse(BaseModel):
 class ChangePasswordRequest(BaseModel):
     firebase_auth_token: str
     new_password: str
+
+
+class BootstrapSuperAdminRequest(BaseModel):
+    """Only works when no staff exist. Creates the first super admin. Name, gender, dob fill profile."""
+    email: EmailStr
+    full_name: str
+    gender: Gender
+    dob: date | None = None
+    password: str | None = Field(default=None, min_length=8)

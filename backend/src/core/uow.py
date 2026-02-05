@@ -9,6 +9,8 @@ from common.repositories import (
     StaffRepository,
     CustomerRepository,
     DriverRepository,
+    StationRepository,
+    TravelRouteRepository
 )
 
 
@@ -24,6 +26,8 @@ class UnitOfWork(AbstractContextManager):
         self.profile = ProfileRepository(session)
         self.driver = DriverRepository(session)
         self.customer = CustomerRepository(session)
+        self.station = StationRepository(session)
+        self.travel_route = TravelRouteRepository(session)
 
     def __enter__(self) -> "UnitOfWork":
         if self.session.in_transaction():

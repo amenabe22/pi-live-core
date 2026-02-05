@@ -87,3 +87,19 @@ class PolygonGeoJSON(BaseModel):
             closed.append(ring)
         self.coordinates = closed  # assign normalized rings
         return self
+
+# -- RFC 7946 GeoJSON LineString | single polyline --
+
+LinePosition = tuple[float, float] #[lon, lat]
+LineStringCoordinates = Annotated[list[LinePosition], Field(min_length=2)]
+
+class PolylineGeoJSON(BaseModel):
+    type: Literal["LineString"]
+    coordinates: LineStringCoordinates
+
+    @model_validator(mode="after")
+    def validate_linestring(self):
+        # Ensure at least 2 distinct points.
+        if len(set(self.coordinates)) < 2:
+            raise ValueError("LineString must have at least 2 distinct points")
+        return self

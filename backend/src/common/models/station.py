@@ -1,29 +1,54 @@
 import uuid
 from sqlalchemy import (
-    Column, String, Float, DateTime, func, Text
+    Column, ForeignKey, Integer, String, Float,
+    Text, Boolean, Date, DateTime, func, text
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY
 from core.db import Base
 
 
 class Station(Base):
-    __tablename__ = "stations"
-    __table_args__ = {"schema": "public"}
+    __tablename__ = "station"
 
-    id = Column(
+    id: str = Column(
         String(length=36),
         primary_key=True,
         default=lambda: str(uuid.uuid4()),
         index=True,
     )
-    name = Column(String, nullable=False)
-    latitude = Column(Float, nullable=False)
-    longitude = Column(Float, nullable=False)
-    radius = Column(Float, default=100.0)  # Radius in meters to consider "at station"
-    address = Column(Text, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    # Relationships
-    origin_travels = relationship("Travel", foreign_keys="[Travel.origin_station_id]", back_populates="origin_station")
-    destination_travels = relationship("Travel", foreign_keys="[Travel.destination_station_id]", back_populates="destination_station")
+    name: str = Column(
+        String(length=1024),
+        nullable=False,
+    )
+
+    address: str = Column(
+        String(length=1024), 
+        nullable=False
+    )
+    latitude: float = Column(
+        Float,
+        nullable=False
+    )
+    longitude: float = Column(
+        Float, 
+        nullable=False
+    )
+
+    created_by: int | None = Column(
+        String(length=36),
+        ForeignKey("staff.user_id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    created_at: DateTime = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+    updated_at: DateTime = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )

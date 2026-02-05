@@ -1,0 +1,35 @@
+meta {
+  name: create a travel route
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/staff/travel-routes
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Mexico to Tor Hailoch",
+    "station_ids": ["00000000-0000-0000-0000-000000000001"],
+    "polyline": {
+      "type": "LineString",
+      "coordinates": [
+        [38.744509, 9.010223],
+        [38.741900, 9.010400],
+        [38.738500, 9.010620],
+        [38.734800, 9.010850],
+        [38.731200, 9.011020],
+        [38.727000, 9.011220],
+        [38.722910, 9.011370]
+      ]
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

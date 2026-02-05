@@ -17,10 +17,11 @@ from ..schemas import (
     EndUserSignUpRequest,
     EndUserSignInRequest,
     EndUserResponse,
-    EndUserPhoneNoUpdate
+    EndUserPhoneNoUpdate,
+    GoogleSignInRequest,
 )
 
-from .service import create_customer, authenticate_customer
+from .service import create_customer, authenticate_customer, authenticate_customer_google
 from ..service import update_phone_number_enduser
 
 
@@ -48,6 +49,17 @@ def login(
     uow: UnitOfWork = Depends(get_uow),
 ):
     return authenticate_customer(req, uow)
+
+@router.post(
+    "/google",
+    response_model=AuthResponse,
+    summary="Sign in with Google (customer)"
+)
+def sign_in_with_google(
+    req: GoogleSignInRequest,
+    uow: UnitOfWork = Depends(get_uow),
+):
+    return authenticate_customer_google(req, uow)
 
 @router.get(
     "/me", 

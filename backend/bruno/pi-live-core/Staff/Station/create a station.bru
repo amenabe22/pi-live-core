@@ -1,0 +1,25 @@
+meta {
+  name: create a station
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/staff/stations
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Mexico Station 1",
+    "address": "Addis Ababa, Mexico Sq.",
+    "latitude": 9.0104863,
+    "longitude": 38.7424761
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

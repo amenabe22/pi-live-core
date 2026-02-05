@@ -7,18 +7,32 @@ from core.dependencies import get_uow
 from core.uow import UnitOfWork
 
 from ..dependencies import require_member, require_superadmin
-from ..schemas import AuthResponse
+from ..schemas import AuthResponse, GoogleSignInRequest
 from .schemas import (
     StaffSignUpRequest, StaffSignInRequest, StaffResponse,
     StaffBeforeVerifyAuthResponse, StaffVerifyOTPRequest,
-    ChangePasswordRequest
+    ChangePasswordRequest, BootstrapSuperAdminRequest
 )
-from .service import ( 
-    create_staff, get_verification_token, authenticate_staff,
-    change_staff_password, change_own_password
+from .service import (
+    create_staff, create_first_superadmin, get_verification_token, authenticate_staff,
+    authenticate_staff_google, change_staff_password, change_own_password
 )
 
 router = APIRouter(prefix="/staff", tags=["staff-auth"])
+
+
+@router.post(
+    "/bootstrap-superadmin",
+    response_model=AuthResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create first super admin (email, full_name, optional gender/dob/password). Works only when no staff exist; disabled after that."
+)
+def bootstrap_superadmin(
+    req: BootstrapSuperAdminRequest,
+    uow: UnitOfWork = Depends(get_uow),
+):
+    return create_first_superadmin(req, uow)
+
 
 @router.post(
     "/signup",
@@ -34,9 +48,9 @@ def signup_staff(
     return create_staff(req, uow)
 
 @router.post(
-    "/get-verification", 
+    "/get-verification",
     response_model=StaffBeforeVerifyAuthResponse,
-    summary="provide phone number and password and get verification token"
+    summary="Provide email and password to get verification token"
 )
 def get_verification(
     req: StaffSignInRequest,
@@ -46,7 +60,7 @@ def get_verification(
 
 
 @router.post(
-    "/verify-auth", 
+    "/verify-auth",
     response_model=AuthResponse,
     summary="Verify auth tokens and get access token"
 )
@@ -55,6 +69,18 @@ def login(
     uow: UnitOfWork = Depends(get_uow),
 ):
     return authenticate_staff(req, uow)
+
+
+@router.post(
+    "/google",
+    response_model=AuthResponse,
+    summary="Sign in with Google (staff)"
+)
+def sign_in_with_google(
+    req: GoogleSignInRequest,
+    uow: UnitOfWork = Depends(get_uow),
+):
+    return authenticate_staff_google(req, uow)
 
 
 @router.get(
@@ -72,7 +98,7 @@ def read_own_profile(
 @router.post(
     "/change-password",
     response_model=AuthResponse,
-    summary="Change your own password after OTP verification"
+    summary="Change your own password after email verification"
 )
 def change_password(
     req: ChangePasswordRequest,
@@ -84,7 +110,7 @@ def change_password(
 @router.post(
     "/admin-change-password",
     response_model=AuthResponse,
-    summary="Admin changes another staff member's password after OTP verification"
+    summary="Admin changes another staff member's password after email verification"
 )
 def change_password_admin(
     req: ChangePasswordRequest,

@@ -1,9 +1,10 @@
-from ..service import create_enduser, authenticate_enduser
+from ..service import create_enduser, authenticate_enduser, authenticate_with_google
 from ..schemas import (
     AuthResponse,
     EndUserSignUpRequest,
     EndUserSignInRequest,
     EndUserResponse,
+    GoogleSignInRequest,
 )
 
 from core.uow import UnitOfWork 
@@ -36,6 +37,16 @@ def authenticate_customer(
         uow
     )
 
+    return auth_res
+
+
+def authenticate_customer_google(
+    data: GoogleSignInRequest,
+    uow: UnitOfWork
+) -> AuthResponse:
+
+    auth_res = authenticate_with_google(data, uow)
+    create_customer_if_not_exist(auth_res.user_id, uow)
     return auth_res
 
 

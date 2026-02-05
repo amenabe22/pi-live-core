@@ -9,14 +9,7 @@ from core.redis import create_redis, close_redis
 from core.rate_limiter import limiter as rate_limiter
 
 from auth import router as auth_router
-from auth.simple import router as simple_auth_router
-from vehicles import router as vehicles_router
-from stations import router as stations_router
-from travels import router as travels_router
-from tracking import router as tracking_router
-from history import router as history_router
-from reviews import router as reviews_router
-from websocket import router as websocket_router
+from staff import router as staff_router
 
 import firebase_admin
 from firebase_admin import credentials
@@ -31,15 +24,12 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.ERROR)
 
-# -- init firebase (optional; simple auth works without it) --
+# -- init firebase --
 try:
     firebase_admin.get_app()
 except ValueError:
-    try:
-        cred = credentials.Certificate(config.FIREBASE_KEY_PATH)
-        firebase_admin.initialize_app(cred)
-    except Exception as e:
-        logging.warning("Firebase init skipped (simple auth does not require it): %s", e)
+    cred = credentials.Certificate(config.FIREBASE_KEY_PATH)
+    firebase_admin.initialize_app(cred)
 
 # -- init sub-apps --
 api_v1 = FastAPI(
@@ -49,13 +39,7 @@ api_v1 = FastAPI(
 
 # -- routes --
 api_v1.include_router(auth_router)
-api_v1.include_router(simple_auth_router)
-api_v1.include_router(vehicles_router)
-api_v1.include_router(stations_router)
-api_v1.include_router(travels_router)
-api_v1.include_router(tracking_router)
-api_v1.include_router(history_router)
-api_v1.include_router(reviews_router)
+api_v1.include_router(staff_router)
 
 # -- lifespan: Redis + Postgres listener --
 @asynccontextmanager
@@ -66,9 +50,6 @@ async def lifespan(app: FastAPI):
     app.state.redis = r
     api_v1.state.redis = r
 
-    # WebSocket manager needs redis for pub/sub
-    from services.websocket_manager import manager
-    manager.set_redis(r)
 
     try:
         yield
@@ -94,9 +75,6 @@ app.add_middleware(
 
 # -- mount apps --
 app.mount(config.API_V1_PREFIX, api_v1)
-
-# WebSocket routes (mounted on main app, not api_v1)
-app.include_router(websocket_router)
 
 # -- rate limiter --
 

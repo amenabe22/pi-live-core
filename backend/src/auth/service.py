@@ -17,7 +17,8 @@ from .schemas import (
     EndUserSignUpRequest,
     EndUserSignInRequest,
     EndUserResponse,
-    EndUserPhoneNoUpdate
+    EndUserPhoneNoUpdate,
+    GoogleSignInRequest,
 )
 
 
@@ -141,47 +142,64 @@ def create_enduser(
     uow: UnitOfWork
 ) -> AuthResponse:
 
-    validate_country_code(data.phone_no, uow)
+    hashed = get_password_hash(data.password) if data.password else None
 
-    if uow.users.get_by(phone_no=data.phone_no):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Phone already registered"
-        )
-
-    hashed = get_password_hash(data.password)
-
-    firebase_user = firebase_verify_token(data.firebase_auth_token)
-    firebase_phone_no = firebase_user.get("phone_number")
-
-    if firebase_phone_no != data.phone_no:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Firebase: provided phone number does not match the one associated with the request."
-        )
-
-    with uow:
-        user = uow.users.add(
-            uow.users.model(
-                phone_no = data.phone_no,
-                password = hashed,
-                roles    = [Role.ENDUSER],
-            ),
-            flush=True
-        )
-
-        profile = uow.profile.add(
-            uow.profile.model(
-                user_id   = user.id,
-                name      = data.name,
-                gender    = data.gender.value,
-                dob      = data.dob,
+    if data.phone_no is not None:
+        validate_country_code(data.phone_no, uow)
+        if uow.users.get_by(phone_no=data.phone_no):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Phone already registered"
             )
-        )
-
-    firebase_revoke_token(
-        firebase_user.get("uid")
-    )
+        firebase_user = firebase_verify_token(data.firebase_auth_token)
+        firebase_phone_no = firebase_user.get("phone_number")
+        if firebase_phone_no != data.phone_no:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Firebase: provided phone number does not match the one associated with the request."
+            )
+        with uow:
+            user = uow.users.add(
+                uow.users.model(
+                    phone_no=data.phone_no,
+                    password=hashed,
+                    roles=[Role.ENDUSER],
+                ),
+                flush=True
+            )
+            profile = uow.profile.add(
+                uow.profile.model(
+                    user_id=user.id,
+                    name=data.name,
+                    gender=data.gender.value,
+                    dob=data.dob,
+                )
+            )
+        firebase_revoke_token(firebase_user.get("uid"))
+    else:
+        if uow.users.get_by(email=data.email):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered"
+            )
+        with uow:
+            user = uow.users.add(
+                uow.users.model(
+                    email=data.email,
+                    phone_no=None,
+                    password=hashed,
+                    roles=[Role.ENDUSER],
+                ),
+                flush=True
+            )
+            profile = uow.profile.add(
+                uow.profile.model(
+                    user_id=user.id,
+                    name=data.name,
+                    gender=data.gender.value,
+                    dob=data.dob,
+                )
+            )
 
     token = get_new_auth(uow, user)
 
@@ -218,6 +236,104 @@ def authenticate_enduser(
     firebase_revoke_token(
         firebase_user.get("uid")
     )
+
+    return AuthResponse(
+        user_id=user.id,
+        access_token=token,
+        token_type='bearer'
+    )
+
+
+def authenticate_with_google(
+    data: GoogleSignInRequest,
+    uow: UnitOfWork
+) -> AuthResponse:
+
+    firebase_user = firebase_verify_token(data.firebase_id_token)
+    email = firebase_user.get("email")
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google account has no email"
+        )
+
+    user = uow.users.get_by(email=email)
+    if not user:
+        with uow:
+            user = uow.users.add(
+                uow.users.model(
+                    email=email,
+                    password=None,
+                    roles=[Role.ENDUSER],
+                ),
+                flush=True
+            )
+            uow.profile.add(
+                uow.profile.model(
+                    user_id=user.id,
+                    name=firebase_user.get("name"),
+                    profile_picture=firebase_user.get("picture"),
+                )
+            )
+    if Role.ENDUSER not in user.roles:
+        with uow:
+            uow.users.patch(
+                user,
+                {"roles": user.roles + [Role.ENDUSER]},
+                flush=True
+            )
+
+
+    if user.is_suspended:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cannot login this account is suspended"
+        )
+
+    token = get_new_auth(uow, user)
+    firebase_revoke_token(firebase_user.get("uid"))
+
+    return AuthResponse(
+        user_id=user.id,
+        access_token=token,
+        token_type='bearer'
+    )
+
+
+def authenticate_with_google_staff(
+    data: GoogleSignInRequest,
+    uow: UnitOfWork
+) -> AuthResponse:
+
+    firebase_user = firebase_verify_token(data.firebase_id_token)
+    email = firebase_user.get("email")
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google account has no email"
+        )
+
+    user = uow.users.get_by(email=email)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found. Sign up as staff first."
+        )
+
+    if not uow.staff.get_by(user_id=user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User is not a staff member"
+        )
+
+    if user.is_suspended:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cannot login this account is suspended"
+        )
+
+    token = get_new_auth(uow, user)
+    firebase_revoke_token(firebase_user.get("uid"))
 
     return AuthResponse(
         user_id=user.id,

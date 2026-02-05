@@ -1,0 +1,16 @@
+meta {
+  name: get current account
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{url}}/auth/driver/me
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

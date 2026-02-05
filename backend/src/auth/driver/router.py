@@ -9,16 +9,18 @@ from core.uow import UnitOfWork
 
 from core.const import Gender
 
-from ..dependencies import require_enduser
+from ..dependencies import require_enduser, require_member
 from ..schemas import (
     AuthResponse,
     EndUserSignUpRequest,
     EndUserSignInRequest,
     EndUserResponse,
-    EndUserSignInRequest
+    GoogleSignInRequest,
+    CreateDriverRequest,
+    CreateDriverResponse,
 )
 
-from .service import create_driver, authenticate_driver
+from .service import create_driver_by_email, authenticate_driver, authenticate_driver_google
 from ..service import update_phone_number_enduser
 
 
@@ -26,26 +28,38 @@ router = APIRouter(prefix="/driver", tags=["driver-auth"])
 
 @router.post(
     "/signup",
-    response_model=AuthResponse,
+    response_model=CreateDriverResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Sign up for driver"
+    summary="Create a driver by email (staff only). Provide driver email only."
 )
 def signup(
-    req: EndUserSignUpRequest,
-    uow: UnitOfWork = Depends(get_uow)
+    req: CreateDriverRequest,
+    _staff=Depends(require_member),
+    uow: UnitOfWork = Depends(get_uow),
 ):
-    return create_driver(req, uow)
+    return create_driver_by_email(req, uow)
 
 @router.post(
-    "/login", 
+    "/login",
     response_model=AuthResponse,
-    summary="Log in as driver and receive a JWT"
+    summary="Log in as driver (phone + Firebase) and receive a JWT"
 )
 def login(
     req: EndUserSignInRequest,
     uow: UnitOfWork = Depends(get_uow),
 ):
     return authenticate_driver(req, uow)
+
+@router.post(
+    "/google",
+    response_model=AuthResponse,
+    summary="Sign in with Google (driver)"
+)
+def sign_in_with_google(
+    req: GoogleSignInRequest,
+    uow: UnitOfWork = Depends(get_uow),
+):
+    return authenticate_driver_google(req, uow)
 
 @router.get(
     "/me", 
@@ -58,6 +72,13 @@ def read_own_profile(
 ):
     profiles = uow.profile.get(user["id"])
     usering = uow.users.get(user["id"])
+    driver = uow.driver.get(user["id"])
+
+    if not driver:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User is not a driver."
+        )        
 
     return EndUserResponse(
         user_id   = profiles.user_id,
